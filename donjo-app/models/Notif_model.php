@@ -58,6 +58,7 @@ class Notif_model extends CI_Model {
 		{
 			// simpan view pengumuman dalam variabel
 			$data['isi_pengumuman'] = $notif['isi'];
+			$data['kode'] = $notif['kode'];
 			$data['judul'] = $notif['judul'];
 			$data['aksi'] = $notif['aksi'];
 			$aksi = explode(',', $notif['aksi']);
@@ -74,19 +75,33 @@ class Notif_model extends CI_Model {
 		$notif = $this->notif_model->get_notif_by_kode($kode);
 		$tgl_sekarang = date("Y-m-d H:i:s");
 
-		if (empty($this->input->post('cek_lagi')))
+		// jika notifikasi berupa pemberitahuan tracking, dan checkbox jangan tampilkan lagi tidak dicentang
+		// maka notifikasi akan ditampilkan lagi
+		if (empty($this->input->post('cek_lagi')) && $kode == 'tracking_off' ) 
+		{
+			$tgl_berikutnya = $tgl_sekarang;
+		}
+		else
 		{
 			$frekuensi = $notif['frekuensi'];
 			$string_frekuensi = "+". $frekuensi . " Days";
 			$tambah_hari = strtotime($string_frekuensi); // tgl hari ini ditambah frekuensi
-			$tgl_berikutnya =  date('Y-m-d H:i:s', $tambah_hari);
-		}
-		else
-		{
-			$tgl_berikutnya = $tgl_sekarang;
+			$tgl_berikutnya =  date('Y-m-d H:i:s', $tambah_hari);			
 		}
 		$user = $this->session->user;
 		$this->notif_model->update_by_kode($kode, $tgl_berikutnya, $tgl_sekarang, $user);
+	}
+
+	// query semua notifikasi yang siap untuk tampil
+	// order by 'id' dengan asumsi id=1 adalah Persetujuan Penggunaan 
+	public function get_semua_notif()
+	{
+		$hari_ini = new DateTime();
+		$compare = $hari_ini->format('Y-m-d H:i:s');
+		$semua_notif = $this->db->where('tgl_berikutnya <=', $compare)
+								->order_by('id', 'ASC')
+								->get('notifikasi')->result_array();
+		return $semua_notif;
 	}
 
 }
