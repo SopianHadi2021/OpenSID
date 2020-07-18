@@ -203,11 +203,11 @@ class Admin_Controller extends MY_Controller
 	{
 		if ($this->grup == 1) // hanya utk user administrator
 		{
-			// Cek persetujuan_penggunaan terlebih dahulu
-			$this->pengumuman = $this->notif_model->notifikasi('persetujuan_penggunaan');
-			if($this->pengumuman == NULL && $this->setting->enable_track == 0)
+			$notifikasi = $this->notif_model->get_semua_notif();
+			foreach($notifikasi as $notif)
 			{
-				$this->pengumuman = $this->notif_model->notifikasi('tracking_off');
+				$this->pengumuman = $this->notif_model->notifikasi($notif['kode']);
+				if ($notif['jenis'] == 'persetujuan') break;
 			}
 		}
 
