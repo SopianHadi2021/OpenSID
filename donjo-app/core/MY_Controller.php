@@ -202,23 +202,12 @@ class Admin_Controller extends MY_Controller
 	private function cek_pengumuman()
 	{
 		if ($this->grup == 1) // hanya utk user administrator
-		{			
+		{
 			$notifikasi = $this->notif_model->get_semua_notif();
 			foreach($notifikasi as $notif)
 			{
-				switch ($notif['kode']) 
-				{
-					case 'persetujuan_penggunaan':
-						$this->pengumuman = $this->notif_model->notifikasi('persetujuan_penggunaan');
-						break 2;  // keluar dari switch dan foreach 
-					case 'tracking_off':
-						if($this->setting->enable_track == 0)
-							$this->pengumuman = $this->notif_model->notifikasi('tracking_off');
-						break 2;
-					default:
-						$this->pengumuman = $this->notif_model->notifikasi($notif['kode']);
-						break 2;
-				}
+				$this->pengumuman = $this->notif_model->notifikasi($notif['kode']);
+				if ($notif['jenis'] == 'persetujuan') break;
 			}
 		}
 

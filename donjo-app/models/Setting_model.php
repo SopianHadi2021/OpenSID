@@ -98,18 +98,19 @@ class Setting_model extends CI_Model {
 		}
 		$this->apply_setting();
 
-		if($this->setting->enable_track == 0)
+		if ($this->setting->enable_track == 0)
 		{
 			$notif = [
 				'updated_at' => date("Y-m-d H:i:s"),
-				'tgl_berikutnya' => date("Y-m-d H:i:s")
+				'tgl_berikutnya' => date("Y-m-d H:i:s"),
+				'aktif' => 1
 			];
 
 			$this->db->where('kode', 'tracking_off')->update('notifikasi', $notif);
 		}
 	}
 
-	public function update ($key = 'enable_track', $value = 1)
+	public function update($key = 'enable_track', $value = 1)
 	{
 		$this->session->success = 1;
 
@@ -117,6 +118,13 @@ class Setting_model extends CI_Model {
 
 		if (!$outp) $this->session->success = -1;
 	}
+
+	public function aktifkan_tracking()
+	{
+		$outp = $this->db->where('key', 'enable_track')->update('setting_aplikasi', ['value' => 1]);
+		status_sukses($outp);
+	}
+
 
 	public function update_slider()
 	{

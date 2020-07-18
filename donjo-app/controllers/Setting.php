@@ -34,17 +34,11 @@ class Setting extends Admin_Controller {
 		redirect($_SERVER['HTTP_REFERER']);
 	}
 
-	public function tracking()
+	public function aktifkan_tracking()
 	{
-		$this->setting_model->update();
-		$this->notif_tracking();
-	}
-
-	// Simpan notifikasi tracking
-	public function notif_tracking()
-	{
-		$this->notif_model->update_notifikasi('tracking_off');
-		redirect('setting');
+		if ($this->input->post('notifikasi') != 1) return; // Hanya bila dipanggil dari form pengumuman
+		$this->setting_model->aktifkan_tracking();
+		$this->db->where('kode', 'tracking_off')->update('notifikasi', ['aktif' => 0]);
 	}
 
 	public function info_sistem()
