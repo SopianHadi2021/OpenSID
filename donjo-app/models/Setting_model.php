@@ -94,20 +94,32 @@ class Setting_model extends CI_Model {
 				$value = strip_tags($value);
 				$this->update($key, $value);
 				$this->setting->$key = $value;
+				if ($key == 'enable_track') $this->notifikasi_tracker();
 			}
 		}
 		$this->apply_setting();
+	}
 
+	private function notifikasi_tracker()
+	{
 		if ($this->setting->enable_track == 0)
 		{
+			// Notifikasi tracker dimatikan
 			$notif = [
 				'updated_at' => date("Y-m-d H:i:s"),
 				'tgl_berikutnya' => date("Y-m-d H:i:s"),
 				'aktif' => 1
 			];
-
-			$this->db->where('kode', 'tracking_off')->update('notifikasi', $notif);
 		}
+		else
+		{
+			// Matikan notifikasi tracker yg sdh aktif
+			$notif = [
+				'updated_at' => date("Y-m-d H:i:s"),
+				'aktif' => 0
+			];
+		}
+		$this->db->where('kode', 'tracking_off')->update('notifikasi', $notif);
 	}
 
 	public function update($key = 'enable_track', $value = 1)
